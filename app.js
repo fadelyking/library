@@ -25,21 +25,22 @@ function AddBookToLibrary(title, author, pages, read) {
 
 // Link addbook function to book function. addbooktolibrary.book.prototype
 Object.setPrototypeOf(AddBookToLibrary.prototype, Book.prototype);
-Object.setPrototypeOf(BookStatus.prototype, AddBookToLibrary.prototype);
 
-function BookStatus(read) {
-	Book.call(this, read);
-	const statusBtn = document.createElement("button");
-	statusBtn.classList.add("switch");
-	statusBtn.textContent = "test";
-	card.appendChild(statusBtn);
-	statusBtn.addEventListener("click", () => {
-		if (radioButton.id === read_book) {
-			console.log("Did read the book");
-		} else console.log("DID NOT READ THE BOOK");
-		statusBtn.textContent = "not a test";
-	});
-}
+// Change book status
+Book.prototype.statusBook = function (title, author, pages, read) {
+	Book.call(this, title, author, pages, read);
+	if (this.read === "Read") {
+		this.read = "Not Read";
+		const card = document.querySelector(".card");
+		myLibrary.push(`${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`);
+		card.textContent = myLibrary;
+	} else {
+		this.read = "Read";
+		const card = document.querySelector(".card");
+		myLibrary[read] = this.read;
+	}
+};
+
 // Display the hidden form on page
 
 const startForm = document.querySelector(".start-form");
@@ -61,7 +62,6 @@ submitForm.addEventListener("click", (e) => {
 	let readOrNot;
 	for (let radioButton of radioButtons) {
 		if (radioButton.checked) {
-			console.log(radioButton.id);
 			readOrNot = radioButton.value;
 			break;
 		}
@@ -79,11 +79,21 @@ submitForm.addEventListener("click", (e) => {
 			let last = myLibrary.pop();
 			card.textContent = last;
 
+			// Change book status
+			const statusBtn = document.createElement("button");
+			statusBtn.classList.add("status");
+			statusBtn.textContent = "Change Status";
+			statusBtn.addEventListener("click", () => {
+				newBook.statusBook(bookName, author, pages);
+			});
+
+			card.appendChild(statusBtn);
+
 			// Delete button that removes items from library
 			const deleteBtn = document.createElement("button");
 			deleteBtn.classList.add("delete");
 			deleteBtn.textContent = "Remove Book";
-			deleteBtn.addEventListener("click", (e) => {
+			deleteBtn.addEventListener("click", () => {
 				container.removeChild(card);
 			});
 			container.appendChild(card);
