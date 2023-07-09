@@ -18,28 +18,13 @@ const Hobbit = new Book("The Hobbit", "J.R.R. Tolkien", "295", "not read");
 Hobbit.info();
 
 // Push to library
-function AddBookToLibrary(title, author, pages, read) {
+function addBookToLibrary(title, author, pages, read) {
 	Book.call(this, title, author, pages, read);
 	return myLibrary.push(`${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`);
 }
 
 // Link addbook function to book function. addbooktolibrary.book.prototype
-Object.setPrototypeOf(AddBookToLibrary.prototype, Book.prototype);
-
-// Change book status
-Book.prototype.statusBook = function (title, author, pages, read) {
-	Book.call(this, title, author, pages, read);
-	if (this.read === "Read") {
-		this.read = "Not Read";
-		const card = document.querySelector(".card");
-		myLibrary.push(`${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`);
-		card.textContent = myLibrary;
-	} else {
-		this.read = "Read";
-		const card = document.querySelector(".card");
-		myLibrary[read] = this.read;
-	}
-};
+Object.setPrototypeOf(addBookToLibrary.prototype, Book.prototype);
 
 // Display the hidden form on page
 
@@ -67,24 +52,26 @@ submitForm.addEventListener("click", (e) => {
 		}
 	}
 
-	const newBook = new AddBookToLibrary(bookName, author, pages, readOrNot);
+	const newBook = new addBookToLibrary(bookName, author, pages, readOrNot);
 	newBook.info();
 
 	// Loop over array and display elements on screen
 	const container = document.querySelector(`.books`);
 	function loopArray() {
-		for (let i = 0; i < myLibrary.length; i++) {
+		for (let i = 0; i < 1; i++) {
 			const card = document.createElement("div");
 			card.classList.add("card");
-			let last = myLibrary.pop();
+			const last = myLibrary.slice(-1);
 			card.textContent = last;
 
-			// Change book status
+			// Change book status button
 			const statusBtn = document.createElement("button");
 			statusBtn.classList.add("status");
 			statusBtn.textContent = "Change Status";
 			statusBtn.addEventListener("click", () => {
-				newBook.statusBook(bookName, author, pages);
+				myLibrary.slice(e.target);
+				container.removeChild(card);
+				newBook.statusBook(bookName, author, pages, readOrNot);
 			});
 
 			card.appendChild(statusBtn);
@@ -93,7 +80,8 @@ submitForm.addEventListener("click", (e) => {
 			const deleteBtn = document.createElement("button");
 			deleteBtn.classList.add("delete");
 			deleteBtn.textContent = "Remove Book";
-			deleteBtn.addEventListener("click", () => {
+			deleteBtn.addEventListener("click", (e) => {
+				myLibrary.pop(e.target);
 				container.removeChild(card);
 			});
 			container.appendChild(card);
@@ -101,4 +89,20 @@ submitForm.addEventListener("click", (e) => {
 		}
 	}
 	loopArray();
+
+	// Change book status
+	Book.prototype.statusBook = function (title, author, pages, read) {
+		Book.call(this, title, author, pages, read);
+		if (this.read === "Read") {
+			this.read = "Not Read";
+
+			myLibrary.push(`${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`);
+			return loopArray();
+		} else {
+			this.read = "Read";
+
+			myLibrary.push(`${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`);
+			return loopArray();
+		}
+	};
 });
