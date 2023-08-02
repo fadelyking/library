@@ -1,30 +1,28 @@
 let myLibrary = [];
 
-function Book(title, author, pages, read) {
-	this.title = title;
-	this.author = author;
-	this.pages = pages;
-	this.read = read;
-
+class Book {
+	constructor(title, author, pages, read) {
+		this.title = title;
+		this.author = author;
+		this.pages = pages;
+		this.read = read;
+	}
 	// Console log to check if info works
-	this.info = function () {
+	info() {
+		console.log(myLibrary);
 		console.log(`${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`);
-	};
+	}
+
+	// Push to library
+	addBookToLibrary() {
+		return myLibrary.push(`${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`);
+	}
 }
 
 // Sample
 
 const Hobbit = new Book("The Hobbit", "J.R.R. Tolkien", "295", "not read");
 Hobbit.info();
-
-// Push to library
-function addBookToLibrary(title, author, pages, read) {
-	Book.call(this, title, author, pages, read);
-	return myLibrary.push(`${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`);
-}
-
-// Link addbook function to book function. addbooktolibrary.book.prototype
-Object.setPrototypeOf(addBookToLibrary.prototype, Book.prototype);
 
 // Display the hidden form on page
 
@@ -52,8 +50,9 @@ submitForm.addEventListener("click", (e) => {
 		}
 	}
 
-	const newBook = new addBookToLibrary(bookName, author, pages, readOrNot);
+	const newBook = new Book(bookName, author, pages, readOrNot);
 	newBook.info();
+	newBook.addBookToLibrary();
 
 	// Loop over array and display elements on screen
 	const container = document.querySelector(`.books`);
